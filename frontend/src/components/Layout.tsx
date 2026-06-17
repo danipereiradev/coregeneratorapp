@@ -62,6 +62,21 @@ export default function Layout() {
         <p className="footer-copy">
           © {new Date().getFullYear()} CoreGenerator. {t('footer.copy')}
         </p>
+        <div className="footer-signature">
+          <p className="footer-signature__tagline">{t('footer.registered')}</p>
+          <a
+            className="footer-signature__brand"
+            href="https://danipereiraweb.es"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('footer.developerAria')}
+          >
+            <span className="footer-signature__symbol">&gt;</span>
+            <span className="footer-signature__name">danipereiraweb</span>
+            <span className="footer-signature__domain"> .es</span>
+            <span className="footer-signature__cursor">_</span>
+          </a>
+        </div>
       </footer>
     </div>
   );

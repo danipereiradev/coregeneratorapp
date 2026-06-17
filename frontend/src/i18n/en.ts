@@ -114,7 +114,11 @@ const en: Translations = {
     tooManyRequests:
       'Too many requests. Please wait a few minutes and try again.',
   },
-  footer: { copy: 'Free to use.' },
+  footer: {
+    copy: 'Free to use.',
+    registered: 'Registered and free app.',
+    developerAria: 'Website developed by danipereiraweb.es',
+  },
   contentNav: { label: 'Guides' },
   whatIs: {
     metaTitle: 'What is a CORE Video? – CoreGenerator',

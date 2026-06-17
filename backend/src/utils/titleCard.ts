@@ -2,6 +2,7 @@ import Jimp from 'jimp';
 import { OUTPUT_HEIGHT, OUTPUT_WIDTH } from './ffmpeg.js';
 
 export const BRAND_ACCENT_RGB = { r: 124, g: 92, b: 255 };
+const BRANDING_SCALE = 4;
 
 function getTitleFontSize(text: string): number {
   if (text.length <= 18) return 64;
@@ -31,29 +32,58 @@ function tintOpaquePixels(image: Jimp, color: { r: number; g: number; b: number 
   });
 }
 
-async function renderCenteredText(
+async function renderTextLayer(
   text: string,
   fontSize: number,
   color: { r: number; g: number; b: number },
 ): Promise<Jimp> {
   const font = await loadFont(fontSize);
+  const maxTextWidth = OUTPUT_WIDTH - 80;
   const textWidth = Jimp.measureText(font, text);
-  const textHeight = Jimp.measureTextHeight(font, text, OUTPUT_WIDTH - 80);
-  const x = Math.max(40, Math.round((OUTPUT_WIDTH - textWidth) / 2));
-  const y = Math.max(40, Math.round((OUTPUT_HEIGHT - textHeight) / 2));
+  const textHeight = Jimp.measureTextHeight(font, text, maxTextWidth);
+  const shadowOffset = 4;
+  const pad = 8;
+  const layerW = textWidth + pad * 2 + shadowOffset;
+  const layerH = textHeight + pad * 2 + shadowOffset;
 
-  const image = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
+  const layer = new Jimp(layerW, layerH, 0x00000000);
+  const textX = pad;
+  const textY = pad;
 
-  const shadow = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
-  shadow.print(font, x + 4, y + 4, text);
+  const shadow = new Jimp(layerW, layerH, 0x00000000);
+  shadow.print(font, textX + shadowOffset, textY + shadowOffset, text);
   tintOpaquePixels(shadow, { r: 0, g: 0, b: 0 });
   shadow.blur(3);
-  image.composite(shadow, 0, 0);
+  layer.composite(shadow, 0, 0);
 
-  const textLayer = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
-  textLayer.print(font, x, y, text);
+  const textLayer = new Jimp(layerW, layerH, 0x00000000);
+  textLayer.print(font, textX, textY, text);
   tintOpaquePixels(textLayer, color);
-  image.composite(textLayer, 0, 0);
+  layer.composite(textLayer, 0, 0);
+
+  return layer;
+}
+
+async function renderCenteredText(
+  text: string,
+  fontSize: number,
+  color: { r: number; g: number; b: number },
+  scaleFactor = 1,
+): Promise<Jimp> {
+  let layer = await renderTextLayer(text, fontSize, color);
+
+  if (scaleFactor !== 1) {
+    layer = layer.resize(
+      Math.round(layer.bitmap.width * scaleFactor),
+      Math.round(layer.bitmap.height * scaleFactor),
+      Jimp.RESIZE_BILINEAR,
+    );
+  }
+
+  const image = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
+  const x = Math.max(0, Math.round((OUTPUT_WIDTH - layer.bitmap.width) / 2));
+  const y = Math.max(0, Math.round((OUTPUT_HEIGHT - layer.bitmap.height) / 2));
+  image.composite(layer, x, y);
 
   return image;
 }
@@ -72,6 +102,11 @@ export async function createBrandingOverlayImage(
   outputPath: string,
 ): Promise<void> {
   const fontSize = getBrandingFontSize(brandingText);
-  const image = await renderCenteredText(brandingText, fontSize, BRAND_ACCENT_RGB);
+  const image = await renderCenteredText(
+    brandingText,
+    fontSize,
+    BRAND_ACCENT_RGB,
+    BRANDING_SCALE,
+  );
   await image.writeAsync(outputPath);
 }

@@ -118,7 +118,11 @@ const es: Translations = {
     tooManyRequests:
       'Demasiadas peticiones. Espera unos minutos e inténtalo de nuevo.',
   },
-  footer: { copy: 'Gratis para usar.' },
+  footer: {
+    copy: 'Gratis para usar.',
+    registered: 'App registrada y gratuita.',
+    developerAria: 'Web desarrollada por danipereiraweb.es',
+  },
   contentNav: { label: 'Guías' },
   whatIs: {
     metaTitle: '¿Qué es un vídeo CORE? – CoreGenerator',

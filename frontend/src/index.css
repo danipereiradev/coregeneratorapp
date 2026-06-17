@@ -187,6 +187,66 @@ a:hover {
   color: var(--text-muted);
 }
 
+.footer-signature {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-signature__tagline {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.footer-signature__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-signature__brand:hover {
+  color: var(--accent-hover);
+  text-decoration: none;
+}
+
+.footer-signature__symbol {
+  color: var(--accent);
+  margin-right: 0.15rem;
+}
+
+.footer-signature__name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.footer-signature__domain {
+  color: var(--accent-hover);
+}
+
+.footer-signature__cursor {
+  color: var(--accent);
+  margin-left: 0.1rem;
+  animation: footer-cursor-blink 1s step-end infinite;
+}
+
+@keyframes footer-cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
 /* Ad placeholders */
 
 .ad-placeholder {

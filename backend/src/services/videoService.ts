@@ -6,6 +6,7 @@ import { ensureDir, fileExists, getTempRoot } from '../utils/cleanup.js';
 import { END_BRANDING_TEXT, formatCoreTitle } from '../utils/sanitize.js';
 import {
   BACKGROUND_MUSIC_VOLUME,
+  BOOM_CUT_MAX_SEC,
   BOOM_VOLUME,
   FfmpegError,
   OUTPUT_FPS,
@@ -34,37 +35,28 @@ async function buildEndTransitionFromTemplate(
   outputPath: string,
   duration: number,
 ): Promise<void> {
-  const boomPath = getBoomAssetPath();
-  const hasBoom = await fileExists(boomPath);
-
-  const args = ['-i', transitionPath, '-i', brandingImagePath];
-
-  if (hasBoom) {
-    args.push('-i', boomPath);
-    args.push(
-      '-filter_complex',
-      '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v];' +
-        `[2:a]volume=${BOOM_VOLUME}[boom];[0:a][boom]amix=inputs=2:duration=first:dropout_transition=0[a]`,
-    );
-    args.push('-map', '[v]', '-map', '[a]');
-  } else {
-    args.push(
-      '-filter_complex',
-      '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v]',
-    );
-    args.push('-map', '[v]', '-map', '0:a?');
-  }
-
-  args.push(
+  await runFfmpeg([
+    '-i',
+    transitionPath,
+    '-i',
+    brandingImagePath,
+    '-f',
+    'lavfi',
+    '-i',
+    `anullsrc=r=44100:cl=stereo:d=${duration}`,
+    '-filter_complex',
+    '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v]',
+    '-map',
+    '[v]',
+    '-map',
+    '2:a',
     ...getVideoEncodeArgs(),
     ...getAudioEncodeArgs(),
     ...getFaststartArgs(),
     '-t',
     String(duration),
     outputPath,
-  );
-
-  await runFfmpeg(args);
+  ]);
 }
 
 async function buildEndTransitionFallback(
@@ -72,10 +64,7 @@ async function buildEndTransitionFallback(
   outputPath: string,
   duration: number,
 ): Promise<void> {
-  const boomPath = getBoomAssetPath();
-  const hasBoom = await fileExists(boomPath);
-
-  const args = [
+  await runFfmpeg([
     '-loop',
     '1',
     '-framerate',
@@ -86,43 +75,69 @@ async function buildEndTransitionFallback(
     'lavfi',
     '-i',
     `anullsrc=r=44100:cl=mono:d=${duration}`,
-  ];
-
-  if (hasBoom) {
-    args.push('-i', boomPath);
-    args.push(
-      '-filter_complex',
-      `[2:a]volume=${BOOM_VOLUME}[boom];[1:a][boom]amix=inputs=2:duration=first:dropout_transition=0[a]`,
-    );
-    args.push(
-      '-vf',
-      `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT},format=yuv420p`,
-      '-map',
-      '0:v',
-      '-map',
-      '[a]',
-    );
-  } else {
-    args.push(
-      '-vf',
-      `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT},format=yuv420p`,
-      '-map',
-      '0:v',
-      '-map',
-      '1:a',
-    );
-  }
-
-  args.push(
+    '-vf',
+    `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT},format=yuv420p`,
+    '-map',
+    '0:v',
+    '-map',
+    '1:a',
     ...getVideoEncodeArgs(),
     ...getAudioEncodeArgs(),
     ...getFaststartArgs(),
     '-t',
     String(duration),
     outputPath,
-  );
+  ]);
+}
 
-  await runFfmpeg(args);
+async function createBoomCut(jobFolder: string, index: number): Promise<string | null> {
+  const boomPath = getBoomAssetPath();
+  if (!(await fileExists(boomPath))) {
+    console.warn('[video] boom.mp3 not found – skipping boom between clips');
+    return null;
+  }
+
+  const boomsDir = path.join(jobFolder, 'booms');
+  await ensureDir(boomsDir);
+
+  const outputPath = path.join(boomsDir, `boom-${String(index + 1).padStart(2, '0')}.mp4`);
+  const boomDuration = Math.min(await getMediaDuration(boomPath), BOOM_CUT_MAX_SEC);
+
+  await runFfmpeg([
+    '-f',
+    'lavfi',
+    '-i',
+    `color=c=black:s=${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}:r=${OUTPUT_FPS}`,
+    '-i',
+    boomPath,
+    '-filter_complex',
+    `[1:a]volume=${BOOM_VOLUME},aformat=sample_rates=44100:channel_layouts=stereo,atrim=0:${boomDuration},asetpts=PTS-STARTPTS[a]`,
+    '-map',
+    '0:v',
+    '-map',
+    '[a]',
+    '-t',
+    String(boomDuration),
+    ...getVideoEncodeArgs(),
+    ...getAudioEncodeArgs(),
+    ...getFaststartArgs(),
+    outputPath,
+  ]);
+
+  return outputPath;
+}
+
+function interleaveClipsWithBooms(clips: string[], booms: (string | null)[]): string[] {
+  const sequence: string[] = [];
+
+  for (let i = 0; i < clips.length; i++) {
+    sequence.push(clips[i]);
+    if (i < booms.length && booms[i]) {
+      sequence.push(booms[i]!);
+    }
+  }
+
+  return sequence;
 }
 
 export function createTempJobFolder(): string {
@@ -320,7 +335,14 @@ export async function generateCoreVideo(
   console.log(`[video] Creating end transition: "${END_BRANDING_TEXT}"`);
   const endTransition = await createEndTransition(jobFolder, END_BRANDING_TEXT);
 
-  const sequence = [...titledClipPaths, endTransition];
+  console.log('[video] Creating boom cuts between clips…');
+  const boomCuts: (string | null)[] = [];
+  for (let i = 0; i < titledClipPaths.length - 1; i++) {
+    boomCuts.push(await createBoomCut(jobFolder, i));
+  }
+
+  const sequence = interleaveClipsWithBooms(titledClipPaths, boomCuts);
+  sequence.push(endTransition);
   console.log(`[video] Concatenating ${sequence.length} segments…`);
   const concatenatedPath = await concatenateClips(sequence, jobFolder, 'concatenated.mp4');
 

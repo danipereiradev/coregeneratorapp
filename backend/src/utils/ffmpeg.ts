@@ -7,6 +7,7 @@ export const OUTPUT_FPS = 30;
 export const TRANSITION_DURATION_SEC = 2;
 export const BOOM_VOLUME = 1.125;
 export const BACKGROUND_MUSIC_VOLUME = 0.5;
+export const BOOM_CUT_MAX_SEC = 1.5;
 
 const VIDEO_FILTER = [
   `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT}:force_original_aspect_ratio=increase:flags=fast_bilinear`,

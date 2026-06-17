@@ -106,7 +106,7 @@ export interface Translations {
     processingFailed: string;
     tooManyRequests: string;
   };
-  footer: { copy: string };
+  footer: { copy: string; registered: string; developerAria: string };
   contentNav: { label: string };
   whatIs: {
     metaTitle: string;
