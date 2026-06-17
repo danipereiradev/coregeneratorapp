@@ -29,6 +29,142 @@ import {
 } from '../utils/ffmpeg.js';
 import { createBrandingOverlayImage, createTitleOverlayImage } from '../utils/titleCard.js';
 
+async function buildClipTransitionFromTemplate(
+  transitionPath: string,
+  titleImagePath: string,
+  outputPath: string,
+  duration: number,
+): Promise<void> {
+  const boomPath = getBoomAssetPath();
+  const hasBoom = await fileExists(boomPath);
+  const hasTransitionAudio = await hasAudioStream(transitionPath);
+
+  const args = ['-i', transitionPath, '-i', titleImagePath];
+
+  if (hasBoom) {
+    const boomDuration = Math.min(await getMediaDuration(boomPath), BOOM_CUT_MAX_SEC);
+    args.push('-i', boomPath);
+
+    let audioFilter =
+      `[2:a]volume=${BOOM_VOLUME},atrim=0:${boomDuration},asetpts=PTS-STARTPTS,` +
+      'aformat=sample_rates=44100:channel_layouts=stereo[boom]';
+
+    if (hasTransitionAudio) {
+      audioFilter +=
+        ';[0:a][boom]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]';
+    } else {
+      audioFilter += ';[boom]asetpts=PTS-STARTPTS[a]';
+    }
+
+    args.push(
+      '-filter_complex',
+      '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v];' + audioFilter,
+    );
+    args.push('-map', '[v]', '-map', '[a]');
+  } else {
+    args.push(
+      '-filter_complex',
+      '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v]',
+    );
+    args.push('-map', '[v]', '-map', '0:a?');
+  }
+
+  args.push(
+    ...getVideoEncodeArgs(),
+    ...getAudioEncodeArgs(),
+    ...getFaststartArgs(),
+    '-t',
+    String(duration),
+    outputPath,
+  );
+
+  await runFfmpeg(args);
+}
+
+async function buildClipTransitionFallback(
+  titleImagePath: string,
+  outputPath: string,
+  duration: number,
+): Promise<void> {
+  const boomPath = getBoomAssetPath();
+  const hasBoom = await fileExists(boomPath);
+
+  if (hasBoom) {
+    const boomDuration = Math.min(await getMediaDuration(boomPath), BOOM_CUT_MAX_SEC);
+    await runFfmpeg([
+      '-f',
+      'lavfi',
+      '-i',
+      `color=c=black:s=${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}:r=${OUTPUT_FPS}`,
+      '-loop',
+      '1',
+      '-framerate',
+      String(OUTPUT_FPS),
+      '-i',
+      titleImagePath,
+      '-i',
+      boomPath,
+      '-filter_complex',
+      '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v];' +
+        `[2:a]volume=${BOOM_VOLUME},atrim=0:${boomDuration},asetpts=PTS-STARTPTS,` +
+        'aformat=sample_rates=44100:channel_layouts=stereo[a]',
+      '-map',
+      '[v]',
+      '-map',
+      '[a]',
+      ...getVideoEncodeArgs(),
+      ...getAudioEncodeArgs(),
+      ...getFaststartArgs(),
+      '-t',
+      String(duration),
+      outputPath,
+    ]);
+    return;
+  }
+
+  await runFfmpeg([
+    '-f',
+    'lavfi',
+    '-i',
+    `color=c=black:s=${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}:r=${OUTPUT_FPS}`,
+    '-loop',
+    '1',
+    '-framerate',
+    String(OUTPUT_FPS),
+    '-i',
+    titleImagePath,
+    '-f',
+    'lavfi',
+    '-i',
+    `anullsrc=r=44100:cl=stereo:d=${duration}`,
+    '-filter_complex',
+    '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v]',
+    '-map',
+    '[v]',
+    '-map',
+    '2:a',
+    ...getVideoEncodeArgs(),
+    ...getAudioEncodeArgs(),
+    ...getFaststartArgs(),
+    '-t',
+    String(duration),
+    outputPath,
+  ]);
+}
+
+function interleaveClipsAndTransitions(clips: string[], transitions: string[]): string[] {
+  const sequence: string[] = [];
+
+  for (let i = 0; i < clips.length; i++) {
+    sequence.push(clips[i]);
+    if (i < transitions.length) {
+      sequence.push(transitions[i]);
+    }
+  }
+
+  return sequence;
+}
+
 async function buildEndTransitionFromTemplate(
   transitionPath: string,
   brandingImagePath: string,
@@ -90,87 +226,27 @@ async function buildEndTransitionFallback(
   ]);
 }
 
-function buildBoomAudioMixFilter(
-  delaysMs: number[],
-  hasVideoAudio: boolean,
-  boomDuration: number,
-): string {
-  const n = delaysMs.length;
-  let filter =
-    `[1:a]volume=${BOOM_VOLUME},atrim=0:${boomDuration},asetpts=PTS-STARTPTS,` +
-    'aformat=sample_rates=44100:channel_layouts=stereo[boomsrc];';
-
-  const delayedLabels: string[] = [];
-
-  if (n === 1) {
-    filter += `[boomsrc]adelay=${delaysMs[0]}|${delaysMs[0]}[bd0];`;
-    delayedLabels.push('[bd0]');
-  } else {
-    filter += `[boomsrc]asplit=${n}`;
-    for (let i = 0; i < n; i++) {
-      filter += `[b${i}]`;
-    }
-    filter += ';';
-    for (let i = 0; i < n; i++) {
-      filter += `[b${i}]adelay=${delaysMs[i]}|${delaysMs[i]}[bd${i}];`;
-      delayedLabels.push(`[bd${i}]`);
-    }
-  }
-
-  if (hasVideoAudio) {
-    filter +=
-      '[0:a]aformat=sample_rates=44100:channel_layouts=stereo[va];' +
-      `[va]${delayedLabels.join('')}amix=inputs=${n + 1}:duration=first:dropout_transition=0:normalize=0[a]`;
-  } else {
-    filter += `${delayedLabels.join('')}amix=inputs=${n}:duration=longest:normalize=0[a]`;
-  }
-
-  return filter;
-}
-
-async function mixBoomsBetweenClips(
-  videoPath: string,
-  clipPaths: string[],
+export async function createClipTransition(
   jobFolder: string,
+  index: number,
+  titleImagePath: string,
 ): Promise<string> {
-  const boomPath = getBoomAssetPath();
-  if (!(await fileExists(boomPath)) || clipPaths.length < 2) {
-    return videoPath;
+  const transitionsDir = path.join(jobFolder, 'transitions');
+  await ensureDir(transitionsDir);
+
+  const outputPath = path.join(
+    transitionsDir,
+    `transition-${String(index + 1).padStart(2, '0')}.mp4`,
+  );
+  const transitionPath = getTransitionAssetPath();
+  const duration = TRANSITION_DURATION_SEC;
+
+  if (await fileExists(transitionPath)) {
+    await buildClipTransitionFromTemplate(transitionPath, titleImagePath, outputPath, duration);
+  } else {
+    console.warn('[video] transition.mp4 not found – using generated transition card');
+    await buildClipTransitionFallback(titleImagePath, outputPath, duration);
   }
-
-  const clipDurations: number[] = [];
-  for (const clipPath of clipPaths) {
-    clipDurations.push(await getMediaDuration(clipPath));
-  }
-
-  const delaysMs: number[] = [];
-  let cumulativeSec = 0;
-  for (let i = 0; i < clipDurations.length - 1; i++) {
-    cumulativeSec += clipDurations[i];
-    delaysMs.push(Math.round(cumulativeSec * 1000));
-  }
-
-  const boomDuration = Math.min(await getMediaDuration(boomPath), BOOM_CUT_MAX_SEC);
-  const outputPath = path.join(jobFolder, 'with-booms-audio.mp4');
-  const hasVideoAudio = await hasAudioStream(videoPath);
-  const filter = buildBoomAudioMixFilter(delaysMs, hasVideoAudio, boomDuration);
-
-  await runFfmpeg([
-    '-i',
-    videoPath,
-    '-i',
-    boomPath,
-    '-filter_complex',
-    filter,
-    '-map',
-    '0:v',
-    '-map',
-    '[a]',
-    ...getVideoCopyArgs(),
-    ...getAudioEncodeArgs(),
-    ...getFaststartArgs(),
-    outputPath,
-  ]);
 
   return outputPath;
 }
@@ -367,21 +443,21 @@ export async function generateCoreVideo(
     console.log(`[video] Processed clip ${i + 1}/${inputPaths.length}`);
   }
 
+  console.log(`[video] Creating clip transitions with "${coreTitle}"…`);
+  const transitionPaths: string[] = [];
+  for (let i = 0; i < titledClipPaths.length - 1; i++) {
+    const transition = await createClipTransition(jobFolder, i, titleImagePath);
+    transitionPaths.push(transition);
+    console.log(`[video] Transition ${i + 1}/${titledClipPaths.length - 1}`);
+  }
+
   console.log(`[video] Creating end transition: "${END_BRANDING_TEXT}"`);
   const endTransition = await createEndTransition(jobFolder, END_BRANDING_TEXT);
 
-  console.log('[video] Concatenating clips…');
-  const clipsOnlyPath = await concatenateClips(titledClipPaths, jobFolder, 'clips-only.mp4');
-
-  console.log('[video] Mixing boom audio between clips (no transition video)…');
-  const clipsWithBooms = await mixBoomsBetweenClips(clipsOnlyPath, titledClipPaths, jobFolder);
-
-  console.log('[video] Appending end transition…');
-  const concatenatedPath = await concatenateClips(
-    [clipsWithBooms, endTransition],
-    jobFolder,
-    'concatenated.mp4',
-  );
+  const sequence = interleaveClipsAndTransitions(titledClipPaths, transitionPaths);
+  sequence.push(endTransition);
+  console.log(`[video] Concatenating ${sequence.length} segments…`);
+  const concatenatedPath = await concatenateClips(sequence, jobFolder, 'concatenated.mp4');
 
   console.log('[video] Mixing background music…');
   const outputPath = await mixBackgroundMusic(concatenatedPath, jobFolder);
