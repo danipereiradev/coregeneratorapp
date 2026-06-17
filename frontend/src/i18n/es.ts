@@ -2,7 +2,8 @@ import type { Translations } from './types';
 
 const es: Translations = {
   meta: {
-    defaultTitle: 'CoreGenerator – Crea vídeos CORE para TikTok, Reels y Shorts',
+    defaultTitle:
+      'CoreGenerator – Crea vídeos CORE para TikTok, Reels y Shorts',
     defaultDescription:
       'Sube clips, genera tu vídeo CORE y descárgalo para TikTok, Reels o Shorts.',
   },
@@ -101,16 +102,21 @@ const es: Translations = {
     maxClips: 'Máximo {{max}} clips de vídeo.',
     maxSize: 'El tamaño total no puede superar 200 MB (actual: {{current}}).',
     notVideo: '"{{name}}" no es un archivo de vídeo válido.',
-    personNameRequired: 'Introduce el nombre de la persona para el título CORE.',
+    personNameRequired:
+      'Introduce el nombre de la persona para el título CORE.',
     personNameMax: 'El nombre debe tener {{max}} caracteres o menos.',
   },
   errors: {
     generic: 'Algo ha fallado. Inténtalo de nuevo.',
     apiNotConfigured:
       'La API no está configurada. En Vercel, define VITE_API_URL con la URL de Railway y vuelve a desplegar.',
-    serverUnreachable: 'No se puede conectar al servidor de la API. Comprueba tu conexión o inténtalo más tarde.',
+    serverUnreachable:
+      'No se puede conectar al servidor de la API. Comprueba tu conexión o inténtalo más tarde.',
     ffmpeg: 'FFmpeg no está instalado en el servidor.',
-    tooManyRequests: 'Demasiadas peticiones. Espera unos minutos e inténtalo de nuevo.',
+    processingFailed:
+      'No se pudo procesar el vídeo. Prueba con clips más cortos o menos archivos.',
+    tooManyRequests:
+      'Demasiadas peticiones. Espera unos minutos e inténtalo de nuevo.',
   },
   footer: { copy: 'Gratis para usar.' },
   contentNav: { label: 'Guías' },
@@ -119,8 +125,7 @@ const es: Translations = {
     metaDescription:
       'Qué es un edit CORE, por qué usan boom y tarjetas de título, y cómo crearlo gratis con CoreGenerator.',
     title: '¿Qué es un vídeo CORE?',
-    lead:
-      'Un vídeo CORE es un montaje rápido de varios clips con transiciones fuertes, tarjetas de título y formato vertical para TikTok, Reels y Shorts.',
+    lead: 'Un vídeo CORE es un montaje rápido de varios clips con transiciones fuertes, tarjetas de título y formato vertical para TikTok, Reels y Shorts.',
     sections: [
       {
         title: 'El estilo CORE',
@@ -153,8 +158,7 @@ const es: Translations = {
     metaDescription:
       'Guía para crear un vídeo CORE online: sube clips, pon un nombre, genera transiciones con boom y descarga para TikTok, Reels o Shorts.',
     title: 'Cómo hacer un vídeo CORE',
-    lead:
-      'No necesitas software profesional. Sigue estos cuatro pasos para crear un edit CORE vertical en el navegador.',
+    lead: 'No necesitas software profesional. Sigue estos cuatro pasos para crear un edit CORE vertical en el navegador.',
     steps: [
       {
         title: 'Reúne tus clips',
@@ -189,8 +193,7 @@ const es: Translations = {
     metaDescription:
       'Consejos prácticos para publicar vídeos CORE verticales en TikTok, Instagram Reels y YouTube Shorts.',
     title: 'Tips para TikTok, Reels y Shorts',
-    lead:
-      'Un buen edit CORE es solo la mitad. Estos consejos ayudan a que tu vídeo rinda mejor después de descargarlo.',
+    lead: 'Un buen edit CORE es solo la mitad. Estos consejos ayudan a que tu vídeo rinda mejor después de descargarlo.',
     items: [
       {
         title: 'Engancha en el primer segundo',
@@ -210,7 +213,7 @@ const es: Translations = {
       },
       {
         title: 'Nombre claro en la tarjeta',
-        body: 'La cortinilla muestra "Tu Nombre CORE 💀". Usa un nombre reconocible.',
+        body: 'La cortinilla muestra "Tu Nombre CORE". Usa un nombre reconocible.',
       },
       {
         title: 'Caption después de exportar',
@@ -238,16 +241,15 @@ const es: Translations = {
     metaDescription:
       'Ejemplos y estructuras CORE para deporte, gaming, fitness y lifestyle.',
     title: 'Ejemplos de vídeos CORE',
-    lead:
-      'Todo edit CORE sigue el mismo ritmo: clip → cortinilla negra 2 s con boom → clip. Aquí tienes patrones habituales.',
+    lead: 'Todo edit CORE sigue el mismo ritmo: clip → cortinilla negra 2 s con boom → clip. Aquí tienes patrones habituales.',
     structureTitle: 'Estructura estándar',
     structureBlock: `[Clip 1]
    ↓
-[Cortinilla 2 s: "Alex CORE 💀" + boom]
+[Cortinilla 2 s: "Alex CORE" + boom]
    ↓
 [Clip 2]
    ↓
-[Cortinilla 2 s: "Alex CORE 💀" + boom]
+[Cortinilla 2 s: "Alex CORE" + boom]
    ↓
 [Clip 3]
    …`,
@@ -262,7 +264,8 @@ const es: Translations = {
       {
         title: 'CORE gym / fitness',
         desc: 'Series cortas, poses o PRs. Mucha energía y nombre en la tarjeta.',
-        structure: 'Calentamiento → Transición → Lift → Transición → Celebración',
+        structure:
+          'Calentamiento → Transición → Lift → Transición → Celebración',
       },
       {
         title: 'CORE gaming',
@@ -466,7 +469,9 @@ const es: Translations = {
       },
       {
         title: 'Contacto',
-        paragraphs: ['Consultas: página de Contacto o hello@coregenerator.app.'],
+        paragraphs: [
+          'Consultas: página de Contacto o hello@coregenerator.app.',
+        ],
       },
     ],
   },

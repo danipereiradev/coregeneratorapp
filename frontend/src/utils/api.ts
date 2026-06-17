@@ -17,6 +17,15 @@ export function translateApiError(message: string, t: TFunction): string {
   if (lower.includes('ffmpeg') || lower.includes('not installed')) {
     return t('errors.ffmpeg');
   }
+  if (
+    lower.includes('interrupted') ||
+    lower.includes('killed') ||
+    lower.includes('memory') ||
+    lower.includes('fewer') ||
+    lower.includes('shorter')
+  ) {
+    return t('errors.processingFailed');
+  }
   if (lower.includes('too many') || lower.includes('rate limit')) {
     return t('errors.tooManyRequests');
   }

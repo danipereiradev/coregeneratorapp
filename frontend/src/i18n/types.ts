@@ -103,6 +103,7 @@ export interface Translations {
     apiNotConfigured: string;
     serverUnreachable: string;
     ffmpeg: string;
+    processingFailed: string;
     tooManyRequests: string;
   };
   footer: { copy: string };

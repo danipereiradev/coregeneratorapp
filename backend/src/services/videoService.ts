@@ -15,10 +15,12 @@ import {
   getAudioEncodeArgs,
   getBackgroundMusicPath,
   getBoomAssetPath,
+  getConcatCopyArgs,
   getFaststartArgs,
   getMediaDuration,
-  getNormalizeVideoFilter,
+  getTitleOverlayFilterComplex,
   getTransitionAssetPath,
+  getVideoCopyArgs,
   getVideoEncodeArgs,
   hasAudioStream,
   isFfmpegAvailable,
@@ -135,49 +137,27 @@ export function getUploadedFilePaths(files: Express.Multer.File[]): string[] {
     .sort();
 }
 
-export async function normalizeClip(
+export async function processClipWithTitle(
   inputPath: string,
+  titleImagePath: string,
   jobFolder: string,
   index: number,
 ): Promise<string> {
-  const normalizedDir = path.join(jobFolder, 'normalized');
-  await ensureDir(normalizedDir);
+  const outputDir = path.join(jobFolder, 'processed');
+  await ensureDir(outputDir);
 
   const outputPath = path.join(
-    normalizedDir,
+    outputDir,
     `clip-${String(index + 1).padStart(2, '0')}.mp4`,
   );
 
   await runFfmpeg([
     '-i',
     inputPath,
-    '-vf',
-    getNormalizeVideoFilter(),
-    '-map',
-    '0:v:0',
-    '-map',
-    '0:a:0?',
-    ...getVideoEncodeArgs(),
-    ...getAudioEncodeArgs(),
-    ...getFaststartArgs(),
-    outputPath,
-  ]);
-
-  return outputPath;
-}
-
-export async function applyTitleOverlay(
-  clipPath: string,
-  titleImagePath: string,
-  outputPath: string,
-): Promise<void> {
-  await runFfmpeg([
-    '-i',
-    clipPath,
     '-i',
     titleImagePath,
     '-filter_complex',
-    '[0:v][1:v]overlay=(W-w)/2:(H-h)/2:format=auto[v]',
+    getTitleOverlayFilterComplex(),
     '-map',
     '[v]',
     '-map',
@@ -187,6 +167,8 @@ export async function applyTitleOverlay(
     ...getFaststartArgs(),
     outputPath,
   ]);
+
+  return outputPath;
 }
 
 export async function createEndTransition(
@@ -234,8 +216,7 @@ export async function concatenateClips(
     '0',
     '-i',
     listPath,
-    ...getVideoEncodeArgs(),
-    ...getAudioEncodeArgs(),
+    ...getConcatCopyArgs(),
     ...getFaststartArgs(),
     outputPath,
   ]);
@@ -273,7 +254,7 @@ export async function mixBackgroundMusic(
       '0:v',
       '-map',
       '[a]',
-      ...getVideoEncodeArgs(),
+      ...getVideoCopyArgs(),
       ...getAudioEncodeArgs(),
       ...getFaststartArgs(),
       '-t',
@@ -294,7 +275,7 @@ export async function mixBackgroundMusic(
       '0:v',
       '-map',
       '[a]',
-      ...getVideoEncodeArgs(),
+      ...getVideoCopyArgs(),
       ...getAudioEncodeArgs(),
       ...getFaststartArgs(),
       '-t',
@@ -322,15 +303,18 @@ export async function generateCoreVideo(
   const titleImagePath = path.join(overlaysDir, 'title.png');
   await createTitleOverlayImage(coreTitle, titleImagePath);
 
-  console.log(`[video] Normalizing ${inputPaths.length} clips…`);
+  console.log(`[video] Processing ${inputPaths.length} clips…`);
   const titledClipPaths: string[] = [];
 
   for (let i = 0; i < inputPaths.length; i++) {
-    const normalized = await normalizeClip(inputPaths[i], jobFolder, i);
-    const titledPath = path.join(overlaysDir, `titled-${String(i + 1).padStart(2, '0')}.mp4`);
-    await applyTitleOverlay(normalized, titleImagePath, titledPath);
+    const titledPath = await processClipWithTitle(
+      inputPaths[i],
+      titleImagePath,
+      jobFolder,
+      i,
+    );
     titledClipPaths.push(titledPath);
-    console.log(`[video] Titled clip ${i + 1}/${inputPaths.length}`);
+    console.log(`[video] Processed clip ${i + 1}/${inputPaths.length}`);
   }
 
   console.log(`[video] Creating end transition: "${END_BRANDING_TEXT}"`);

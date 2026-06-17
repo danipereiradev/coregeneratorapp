@@ -2,7 +2,8 @@ import type { Translations } from './types';
 
 const en: Translations = {
   meta: {
-    defaultTitle: 'CoreGenerator – Create CORE videos for TikTok, Reels & Shorts',
+    defaultTitle:
+      'CoreGenerator – Create CORE videos for TikTok, Reels & Shorts',
     defaultDescription:
       'Upload clips, generate your CORE video, and download it for TikTok, Reels or Shorts.',
   },
@@ -22,13 +23,17 @@ const en: Translations = {
   },
   ad: { space: 'Ad space' },
   home: {
-    metaTitle: 'CoreGenerator – Free CORE Video Maker for TikTok, Reels & Shorts',
+    metaTitle:
+      'CoreGenerator – Free CORE Video Maker for TikTok, Reels & Shorts',
     metaDescription:
       'Upload clips, add a name, and generate a CORE-style vertical video with boom transitions and title cards. Free, no login required.',
     subtitle:
       'Upload clips. Generate your CORE video. Download it for TikTok, Reels or Shorts.',
     steps: [
-      { title: 'Upload your clips', desc: 'Add 2–10 short videos in the order you want.' },
+      {
+        title: 'Upload your clips',
+        desc: 'Add 2–10 short videos in the order you want.',
+      },
       {
         title: 'Generate the CORE edit',
         desc: 'Add a name – it stays centered on screen throughout the video.',
@@ -60,9 +65,15 @@ const en: Translations = {
         title: 'Tips for TikTok / Reels / Shorts',
         desc: 'Posting advice to get more views after you export.',
       },
-      { title: 'Examples', desc: 'Sports, gaming, fitness, and lifestyle CORE structures.' },
+      {
+        title: 'Examples',
+        desc: 'Sports, gaming, fitness, and lifestyle CORE structures.',
+      },
       { title: 'FAQ', desc: 'Limits, formats, privacy, and common questions.' },
-      { title: 'Privacy Policy', desc: 'How we handle your uploads, analytics, and cookies.' },
+      {
+        title: 'Privacy Policy',
+        desc: 'How we handle your uploads, analytics, and cookies.',
+      },
     ],
   },
   uploader: {
@@ -95,9 +106,13 @@ const en: Translations = {
     generic: 'Something went wrong. Please try again.',
     apiNotConfigured:
       'The API is not configured. In Vercel, set VITE_API_URL to your Railway URL and redeploy.',
-    serverUnreachable: 'Cannot reach the API server. Check your connection or try again later.',
+    serverUnreachable:
+      'Cannot reach the API server. Check your connection or try again later.',
     ffmpeg: 'FFmpeg is not installed on the server.',
-    tooManyRequests: 'Too many requests. Please wait a few minutes and try again.',
+    processingFailed:
+      'Video processing failed. Try shorter clips or fewer files.',
+    tooManyRequests:
+      'Too many requests. Please wait a few minutes and try again.',
   },
   footer: { copy: 'Free to use.' },
   contentNav: { label: 'Guides' },
@@ -106,8 +121,7 @@ const en: Translations = {
     metaDescription:
       'Learn what a CORE video edit is and how CoreGenerator helps you make them for free.',
     title: 'What is a CORE video?',
-    lead:
-      'A CORE video is a fast-paced short-form edit built from multiple clips, with loud transitions, bold title cards, and vertical format for TikTok, Reels, and Shorts.',
+    lead: 'A CORE video is a fast-paced short-form edit built from multiple clips, with loud transitions, bold title cards, and vertical format for TikTok, Reels, and Shorts.',
     sections: [
       {
         title: 'The CORE editing style',
@@ -137,7 +151,8 @@ const en: Translations = {
   },
   howTo: {
     metaTitle: 'How to Make a CORE Video – Step-by-Step | CoreGenerator',
-    metaDescription: 'Step-by-step guide to making a CORE video online with CoreGenerator.',
+    metaDescription:
+      'Step-by-step guide to making a CORE video online with CoreGenerator.',
     title: 'How to make a CORE video',
     lead: 'Follow these four steps to create a vertical CORE edit in your browser.',
     steps: [
@@ -175,14 +190,32 @@ const en: Translations = {
     title: 'Tips for TikTok, Reels & Shorts',
     lead: 'A good CORE edit is only half the job. These tips help after you download.',
     items: [
-      { title: 'Hook in the first second', body: 'Start with your strongest clip.' },
-      { title: 'Keep clips short', body: 'Trim long footage before uploading.' },
+      {
+        title: 'Hook in the first second',
+        body: 'Start with your strongest clip.',
+      },
+      {
+        title: 'Keep clips short',
+        body: 'Trim long footage before uploading.',
+      },
       { title: 'Use vertical video', body: 'CoreGenerator exports 9:16 MP4.' },
-      { title: 'Match audio energy', body: 'Lower clip volume if music is already loud.' },
-      { title: 'Clear title name', body: 'The card shows "Your Name CORE 💀".' },
-      { title: 'Add a caption', body: 'Platforms need context in text or on-screen hooks.' },
-      { title: 'Post consistently', body: 'Batch several edits across the week.' },
-      { title: 'Platform safe zones', body: 'Leave space for UI overlays when filming details.' },
+      {
+        title: 'Match audio energy',
+        body: 'Lower clip volume if music is already loud.',
+      },
+      { title: 'Clear title name', body: 'The card shows "Your Name CORE".' },
+      {
+        title: 'Add a caption',
+        body: 'Platforms need context in text or on-screen hooks.',
+      },
+      {
+        title: 'Post consistently',
+        body: 'Batch several edits across the week.',
+      },
+      {
+        title: 'Platform safe zones',
+        body: 'Leave space for UI overlays when filming details.',
+      },
     ],
     platformTitle: 'Platform notes',
     platformList: [
@@ -194,17 +227,19 @@ const en: Translations = {
   },
   examples: {
     metaTitle: 'CORE Video Examples – CoreGenerator',
-    metaDescription: 'Example CORE video structures for sports, gaming, fitness, and lifestyle.',
+    metaDescription:
+      'Example CORE video structures for sports, gaming, fitness, and lifestyle.',
     title: 'CORE video examples',
     lead: 'Every CORE edit follows: clip → 2s black title card with boom → clip.',
     structureTitle: 'Standard structure',
     structureBlock: `[Clip 1]
    ↓
-[2s title: "Alex CORE 💀" + boom]
+[2s title: "Alex CORE" + boom]
    ↓
 [Clip 2]
    …`,
-    structureNote: 'With 3 clips you get 2 transitions. Total length = clips + 2s per transition.',
+    structureNote:
+      'With 3 clips you get 2 transitions. Total length = clips + 2s per transition.',
     items: [
       {
         title: 'Sports highlight CORE',
@@ -228,7 +263,8 @@ const en: Translations = {
       },
     ],
     tryTitle: 'Try it yourself',
-    tryText: 'Upload clips and enter a name — CoreGenerator builds this structure automatically.',
+    tryText:
+      'Upload clips and enter a name — CoreGenerator builds this structure automatically.',
     cta: 'Generate your example →',
   },
   faq: {
@@ -245,8 +281,14 @@ const en: Translations = {
         q: 'What is CoreGenerator?',
         a: 'A free online tool that stitches clips into a CORE-style vertical edit with title cards and boom sounds.',
       },
-      { q: 'Is it free?', a: 'Yes. No login, payment, or subscription required.' },
-      { q: 'How many clips can I upload?', a: 'Between 2 and 10 per generation. Max 200 MB total.' },
+      {
+        q: 'Is it free?',
+        a: 'Yes. No login, payment, or subscription required.',
+      },
+      {
+        q: 'How many clips can I upload?',
+        a: 'Between 2 and 10 per generation. Max 200 MB total.',
+      },
       {
         q: 'What format is the download?',
         a: 'MP4 1080×1920, 30 fps, H.264 + AAC — compatible with TikTok, Reels, and Shorts.',
@@ -259,7 +301,10 @@ const en: Translations = {
         q: 'Do you store my videos?',
         a: 'No. Files are processed temporarily and deleted after generation.',
       },
-      { q: 'Do I need to install anything?', a: 'No. Works in the browser; you only need your clip files.' },
+      {
+        q: 'Do I need to install anything?',
+        a: 'No. Works in the browser; you only need your clip files.',
+      },
       {
         q: 'Can I use copyrighted music?',
         a: 'You are responsible for your content and must have rights to use it.',
@@ -276,7 +321,8 @@ const en: Translations = {
   },
   privacy: {
     metaTitle: 'Privacy Policy – CoreGenerator',
-    metaDescription: 'CoreGenerator Privacy Policy: uploads, cookies, Analytics, AdSense, and your rights.',
+    metaDescription:
+      'CoreGenerator Privacy Policy: uploads, cookies, Analytics, AdSense, and your rights.',
     title: 'Privacy Policy',
     updated: 'Last updated: June 17, 2026',
     sections: [
@@ -289,7 +335,9 @@ const en: Translations = {
       },
       {
         title: '2. Data controller',
-        paragraphs: ['Privacy inquiries: hello@coregenerator.app or our Contact page.'],
+        paragraphs: [
+          'Privacy inquiries: hello@coregenerator.app or our Contact page.',
+        ],
       },
       {
         title: '3. Information we collect',
@@ -334,15 +382,21 @@ const en: Translations = {
       },
       {
         title: '8. Children',
-        paragraphs: ['Not directed at children under 13. Contact us to delete any child data.'],
+        paragraphs: [
+          'Not directed at children under 13. Contact us to delete any child data.',
+        ],
       },
       {
         title: '9. Security',
-        paragraphs: ['We use HTTPS, upload limits, rate limiting, and temp file cleanup.'],
+        paragraphs: [
+          'We use HTTPS, upload limits, rate limiting, and temp file cleanup.',
+        ],
       },
       {
         title: '10. Changes',
-        paragraphs: ['We may update this policy. The date above shows the latest revision.'],
+        paragraphs: [
+          'We may update this policy. The date above shows the latest revision.',
+        ],
       },
     ],
   },
@@ -367,7 +421,11 @@ const en: Translations = {
       {
         title: 'Acceptable use',
         paragraphs: [],
-        list: ['No infringing content', 'No service abuse', 'No automated API abuse'],
+        list: [
+          'No infringing content',
+          'No service abuse',
+          'No automated API abuse',
+        ],
       },
       {
         title: 'Liability',

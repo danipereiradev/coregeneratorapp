@@ -8,7 +8,7 @@ export const MAX_PERSON_NAME_LENGTH = 60;
 const VIDEO_MIME_PREFIX = 'video/';
 
 export function formatCoreTitle(personName: string): string {
-  return `${personName.trim()} CORE 💀`;
+  return `${personName.trim()} CORE`;
 }
 
 export function validatePersonName(name: string, t: TFunction): string | null {
@@ -35,7 +35,10 @@ export function getTotalSizeMb(files: File[]): number {
   return Math.round((totalBytes / (1024 * 1024)) * 10) / 10;
 }
 
-export function validateClipSelection(files: File[], t: TFunction): string | null {
+export function validateClipSelection(
+  files: File[],
+  t: TFunction,
+): string | null {
   if (files.length < MIN_CLIPS) {
     return t('validation.minClips', { min: MIN_CLIPS });
   }

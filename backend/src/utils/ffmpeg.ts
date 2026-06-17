@@ -9,7 +9,7 @@ export const BOOM_VOLUME = 1.125;
 export const BACKGROUND_MUSIC_VOLUME = 0.5;
 
 const VIDEO_FILTER = [
-  `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT}:force_original_aspect_ratio=increase`,
+  `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT}:force_original_aspect_ratio=increase:flags=fast_bilinear`,
   `crop=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT}`,
   'setsar=1',
   `fps=${OUTPUT_FPS}`,
@@ -50,12 +50,26 @@ export function runFfmpeg(args: string[]): Promise<void> {
       reject(err);
     });
 
-    proc.on('close', (code) => {
+    proc.on('close', (code, signal) => {
       if (code === 0) {
         resolve();
         return;
       }
-      reject(new FfmpegError(stderr.trim() || `FFmpeg exited with code ${code}`));
+
+      const detail = stderr.trim();
+      if (code === null) {
+        console.error('[ffmpeg] Process killed:', signal, detail);
+        reject(
+          new FfmpegError(
+            detail ||
+              `Video processing was interrupted (${signal || 'killed'}). Try fewer or shorter clips.`,
+          ),
+        );
+        return;
+      }
+
+      console.error('[ffmpeg] Exit', code, detail);
+      reject(new FfmpegError(detail || `FFmpeg exited with code ${code}`));
     });
   });
 }
@@ -64,19 +78,33 @@ export function getNormalizeVideoFilter(): string {
   return VIDEO_FILTER;
 }
 
+export function getTitleOverlayFilterComplex(): string {
+  return `[0:v]${VIDEO_FILTER}[v0];[v0][1:v]overlay=(W-w)/2:(H-h)/2:format=auto,format=yuv420p[v]`;
+}
+
 export function getVideoEncodeArgs(): string[] {
   return [
     '-c:v',
     'libx264',
     '-preset',
-    'fast',
+    'ultrafast',
     '-crf',
-    '23',
+    '28',
+    '-threads',
+    '1',
     '-pix_fmt',
     'yuv420p',
     '-r',
     String(OUTPUT_FPS),
   ];
+}
+
+export function getConcatCopyArgs(): string[] {
+  return ['-c', 'copy'];
+}
+
+export function getVideoCopyArgs(): string[] {
+  return ['-c:v', 'copy'];
 }
 
 export function getAudioEncodeArgs(): string[] {

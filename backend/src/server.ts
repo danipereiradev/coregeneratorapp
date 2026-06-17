@@ -61,6 +61,7 @@ const generateRateLimit = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
   message: { error: 'Too many generation requests. Please try again later.' },
 });
 
