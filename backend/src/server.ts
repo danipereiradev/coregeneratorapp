@@ -11,20 +11,47 @@ const app = express();
 app.set('trust proxy', 1);
 
 const PORT = Number(process.env.PORT) || 4000;
+
+function normalizeOrigin(origin: string): string {
+  return origin.trim().replace(/\/$/, '');
+}
+
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
   .split(',')
-  .map((origin) => origin.trim())
+  .map(normalizeOrigin)
   .filter(Boolean);
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+  if (!origin) return true;
+
+  const normalized = normalizeOrigin(origin);
+  if (allowedOrigins.includes(normalized)) return true;
+
+  try {
+    const { hostname, protocol } = new URL(normalized);
+    if (protocol !== 'http:' && protocol !== 'https:') return false;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return allowedOrigins.some((o) => o.includes('localhost') || o.includes('127.0.0.1'));
+    }
+    if (hostname.endsWith('.vercel.app')) return true;
+  } catch {
+    return false;
+  }
+
+  return false;
+}
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
+      console.warn(`[cors] Blocked origin: ${origin}`);
       callback(null, false);
     },
+    methods: ['GET', 'POST', 'OPTIONS'],
   }),
 );
 app.use(express.json());

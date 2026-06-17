@@ -51,7 +51,8 @@ export async function generateVideo(
       method: 'POST',
       body: formData,
     });
-  } catch {
+  } catch (err) {
+    console.error('[api] Request failed:', err);
     throw new Error(t('errors.serverUnreachable'));
   }
 
