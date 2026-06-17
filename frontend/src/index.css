@@ -871,6 +871,15 @@ a:hover {
   margin-bottom: 2.5rem;
 }
 
+.home-youtube-shorts {
+  margin-bottom: 2rem;
+}
+
+.home-youtube-shorts h2 {
+  font-size: 1.35rem;
+  margin: 0 0 0.5rem;
+}
+
 .youtube-shorts-section > p {
   margin: 0 0 1.25rem;
   color: var(--text-muted);

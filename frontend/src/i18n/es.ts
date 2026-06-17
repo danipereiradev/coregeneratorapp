@@ -39,7 +39,7 @@ const es: Translations = {
       },
       {
         title: 'Genera el edit CORE',
-        desc: 'Pon un nombre: aparece centrado en pantalla durante todo el vídeo.',
+        desc: 'Pon un título: aparece centrado en pantalla durante todo el vídeo.',
       },
       {
         title: 'Descarga y comparte',
@@ -48,10 +48,10 @@ const es: Translations = {
     ],
     startBtn: 'Empezar a generar',
     generatorTitle: 'Crea tu vídeo CORE',
-    personNameLabel: 'Nombre de la persona',
+    personNameLabel: 'Título',
     personNamePlaceholder: 'ej. Alex',
     titlePreview: 'Vista previa del título:',
-    titlePreviewEmpty: 'Tu Nombre CORE',
+    titlePreviewEmpty: 'Tu título CORE',
     resultReady: '¡Tu vídeo CORE está listo!',
     downloadBtn: 'Descargar vídeo',
     learnTitle: 'Aprende sobre los vídeos CORE',
@@ -102,9 +102,8 @@ const es: Translations = {
     maxClips: 'Máximo {{max}} clips de vídeo.',
     maxSize: 'El tamaño total no puede superar 200 MB (actual: {{current}}).',
     notVideo: '"{{name}}" no es un archivo de vídeo válido.',
-    personNameRequired:
-      'Introduce el nombre de la persona para el título CORE.',
-    personNameMax: 'El nombre debe tener {{max}} caracteres o menos.',
+    personNameRequired: 'Introduce un título para el vídeo CORE.',
+    personNameMax: 'El título debe tener {{max}} caracteres o menos.',
   },
   errors: {
     generic: 'Algo ha fallado. Inténtalo de nuevo.',
@@ -173,8 +172,8 @@ const es: Translations = {
         desc: 'Añade los archivos en la secuencia deseada. Usa las flechas arriba/abajo para reordenar antes de generar.',
       },
       {
-        title: 'Introduce el nombre',
-        desc: 'Escribe el nombre para la tarjeta. Se muestra como "Nombre CORE" centrado en todo el vídeo.',
+        title: 'Introduce el título',
+        desc: 'Escribe el título para la tarjeta. Se muestra como "Tu título CORE" centrado en todo el vídeo.',
       },
       {
         title: 'Genera y descarga',
@@ -216,8 +215,8 @@ const es: Translations = {
         body: 'El boom añade impacto. Si tus clips ya tienen música muy alta, baja el volumen antes de subir.',
       },
       {
-        title: 'Nombre claro en la tarjeta',
-        body: 'La cortinilla muestra "Tu Nombre CORE". Usa un nombre reconocible.',
+        title: 'Título claro en la tarjeta',
+        body: 'La tarjeta muestra "Tu título CORE". Usa un título reconocible.',
       },
       {
         title: 'Caption después de exportar',
@@ -323,7 +322,7 @@ const es: Translations = {
       },
       {
         q: '¿Qué muestra la tarjeta de título?',
-        a: 'Introduces un nombre y aparece como "Nombre CORE" centrado en pantalla durante todo el vídeo.',
+        a: 'Introduces un título y aparece como "Tu título CORE" centrado en pantalla durante todo el vídeo.',
       },
       {
         q: '¿Guardáis mis vídeos?',

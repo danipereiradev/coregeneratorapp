@@ -5,6 +5,7 @@ import AdPlaceholder from '../components/AdPlaceholder';
 import VideoUploader from '../components/VideoUploader';
 import GenerateButton from '../components/GenerateButton';
 import PageMeta from '../components/PageMeta';
+import YoutubeShortsSection from '../components/YoutubeShortsSection';
 import { generateVideo, translateApiError } from '../utils/api';
 import { getTotalSizeMb, validateClipSelection, validatePersonName, formatCoreTitle } from '../utils/validation';
 import { trackEvent } from '../utils/analytics';
@@ -118,6 +119,13 @@ export default function HomePage() {
               {t('home.startBtn')}
             </button>
           </section>
+
+          <YoutubeShortsSection
+            className="home-youtube-shorts"
+            title={messages.examples.youtubeTitle}
+            lead={messages.examples.youtubeLead}
+            videos={messages.examples.youtubeShorts}
+          />
 
           <section className="generator" ref={generatorRef} id="generator">
             <h2>{t('home.generatorTitle')}</h2>

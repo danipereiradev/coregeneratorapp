@@ -36,7 +36,7 @@ const en: Translations = {
       },
       {
         title: 'Generate the CORE edit',
-        desc: 'Add a name – it stays centered on screen throughout the video.',
+        desc: 'Add a title – it stays centered on screen throughout the video.',
       },
       {
         title: 'Download and share',
@@ -45,10 +45,10 @@ const en: Translations = {
     ],
     startBtn: 'Start generating',
     generatorTitle: 'Create your CORE video',
-    personNameLabel: 'Person name',
+    personNameLabel: 'Title',
     personNamePlaceholder: 'e.g. Alex',
     titlePreview: 'Title preview:',
-    titlePreviewEmpty: 'Your Name CORE',
+    titlePreviewEmpty: 'Your title CORE',
     resultReady: 'Your CORE video is ready!',
     downloadBtn: 'Download video',
     learnTitle: 'Learn about CORE videos',
@@ -99,8 +99,8 @@ const en: Translations = {
     maxClips: 'Maximum {{max}} video clips allowed.',
     maxSize: 'Total upload size must not exceed 200 MB (current: {{current}}).',
     notVideo: '"{{name}}" is not a valid video file.',
-    personNameRequired: 'Please enter a person name for the CORE title.',
-    personNameMax: 'Name must be {{max}} characters or fewer.',
+    personNameRequired: 'Please enter a title for your CORE video.',
+    personNameMax: 'Title must be {{max}} characters or fewer.',
   },
   errors: {
     generic: 'Something went wrong. Please try again.',
@@ -169,8 +169,8 @@ const en: Translations = {
         desc: 'Add files in sequence. Reorder with up/down buttons before generating.',
       },
       {
-        title: 'Enter the person name',
-        desc: 'Shown as "Name CORE" centered on screen for the whole video.',
+        title: 'Enter your title',
+        desc: 'Shown as "Your title CORE" centered on screen for the whole video.',
       },
       {
         title: 'Generate and download',
@@ -207,7 +207,7 @@ const en: Translations = {
         title: 'Match audio energy',
         body: 'Lower clip volume if music is already loud.',
       },
-      { title: 'Clear title name', body: 'The card shows "Your Name CORE".' },
+      { title: 'Clear title', body: 'The card shows "Your title CORE".' },
       {
         title: 'Add a caption',
         body: 'Platforms need context in text or on-screen hooks.',
@@ -306,7 +306,7 @@ const en: Translations = {
       },
       {
         q: 'What does the title card show?',
-        a: 'You enter a name; it appears as "Name CORE" centered on screen for the entire video.',
+        a: 'You enter a title; it appears as "Your title CORE" centered on screen for the entire video.',
       },
       {
         q: 'Do you store my videos?',

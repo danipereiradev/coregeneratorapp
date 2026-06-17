@@ -34,10 +34,10 @@ export function sanitizePersonName(raw: string): string {
 export function validatePersonName(raw: string): string | null {
   const name = sanitizePersonName(raw);
   if (!name) {
-    return 'Please enter a person name for the CORE title.';
+    return 'Please enter a title for the CORE video.';
   }
   if (name.length > MAX_PERSON_NAME_LENGTH) {
-    return `Name must be ${MAX_PERSON_NAME_LENGTH} characters or fewer.`;
+    return `Title must be ${MAX_PERSON_NAME_LENGTH} characters or fewer.`;
   }
   return null;
 }
