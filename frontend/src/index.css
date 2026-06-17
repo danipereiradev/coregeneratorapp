@@ -513,9 +513,19 @@ a:hover {
   color: var(--text-muted);
 }
 
+.video-list-wrap {
+  margin-top: 1.25rem;
+}
+
+.video-list-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .video-list {
   list-style: none;
-  margin: 1.25rem 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -536,6 +546,34 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.video-list-item--dragging {
+  opacity: 0.45;
+}
+
+.video-list-item--drop-target {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.video-list-drag-handle {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  letter-spacing: -0.15em;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.video-list-drag-handle:active {
+  cursor: grabbing;
 }
 
 .video-list-order {

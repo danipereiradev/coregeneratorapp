@@ -81,6 +81,8 @@ export interface Translations {
     clips: string;
     moveUp: string;
     moveDown: string;
+    dragHandle: string;
+    reorderHint: string;
     remove: string;
     skippedNonVideo: string;
   };

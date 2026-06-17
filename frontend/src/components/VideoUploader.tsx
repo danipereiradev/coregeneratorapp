@@ -98,6 +98,14 @@ export default function VideoUploader({
     onChange(next);
   };
 
+  const handleReorder = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const next = [...items];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    onChange(next);
+  };
+
   const totalSize = items.reduce((sum, i) => sum + i.size, 0);
   const unit = items.length === 1 ? t('uploader.clip') : t('uploader.clips');
 
@@ -145,6 +153,8 @@ export default function VideoUploader({
         onRemove={handleRemove}
         onMoveUp={handleMoveUp}
         onMoveDown={handleMoveDown}
+        onReorder={handleReorder}
+        disabled={disabled}
       />
 
       {items.length > 0 && (

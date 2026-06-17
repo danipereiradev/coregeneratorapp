@@ -85,6 +85,8 @@ const en: Translations = {
     clips: 'clips',
     moveUp: 'Move {{name}} up',
     moveDown: 'Move {{name}} down',
+    dragHandle: 'Drag to reorder {{name}}',
+    reorderHint: 'Drag clips by the handle to change order.',
     remove: 'Remove {{name}}',
     skippedNonVideo: 'Only video files allowed. Skipped: {{names}}',
   },

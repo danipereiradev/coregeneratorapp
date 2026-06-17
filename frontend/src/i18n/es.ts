@@ -88,6 +88,8 @@ const es: Translations = {
     clips: 'clips',
     moveUp: 'Subir {{name}}',
     moveDown: 'Bajar {{name}}',
+    dragHandle: 'Arrastrar para reordenar {{name}}',
+    reorderHint: 'Arrastra los clips por el asa para cambiar el orden.',
     remove: 'Eliminar {{name}}',
     skippedNonVideo: 'Solo se permiten vídeos. Omitidos: {{names}}',
   },
