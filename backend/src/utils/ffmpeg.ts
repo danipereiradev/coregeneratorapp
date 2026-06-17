@@ -6,6 +6,7 @@ export const OUTPUT_HEIGHT = 1920;
 export const OUTPUT_FPS = 30;
 export const TRANSITION_DURATION_SEC = 2;
 export const BOOM_VOLUME = 1.125;
+export const BACKGROUND_MUSIC_VOLUME = 0.5;
 
 const VIDEO_FILTER = [
   `scale=${OUTPUT_WIDTH}:${OUTPUT_HEIGHT}:force_original_aspect_ratio=increase`,
@@ -94,8 +95,40 @@ export function getTransitionAssetPath(): string {
   return path.resolve(process.cwd(), 'assets', 'transition.mp4');
 }
 
-export function getSkullAssetPath(): string {
-  return path.resolve(process.cwd(), 'assets', 'skull.png');
+export function getBackgroundMusicPath(): string {
+  return path.resolve(process.cwd(), 'assets', 'QKThr.mp3');
+}
+
+export async function hasAudioStream(filePath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const proc = spawn(
+      'ffprobe',
+      [
+        '-v',
+        'error',
+        '-select_streams',
+        'a:0',
+        '-show_entries',
+        'stream=index',
+        '-of',
+        'csv=p=0',
+        filePath,
+      ],
+      { stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+
+    let stdout = '';
+
+    proc.stdout.on('data', (chunk: Buffer) => {
+      stdout += chunk.toString();
+    });
+
+    proc.on('error', () => resolve(false));
+
+    proc.on('close', () => {
+      resolve(stdout.trim().length > 0);
+    });
+  });
 }
 
 export function getMediaDuration(filePath: string): Promise<number> {

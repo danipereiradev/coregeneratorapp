@@ -38,7 +38,7 @@ const es: Translations = {
       },
       {
         title: 'Genera el edit CORE',
-        desc: 'Pon un nombre: insertamos cortinillas negras de 2 s con boom entre clips.',
+        desc: 'Pon un nombre: aparece centrado en pantalla durante todo el vídeo.',
       },
       {
         title: 'Descarga y comparte',
@@ -50,7 +50,7 @@ const es: Translations = {
     personNameLabel: 'Nombre de la persona',
     personNamePlaceholder: 'ej. Alex',
     titlePreview: 'Vista previa del título:',
-    titlePreviewEmpty: 'Tu Nombre CORE 💀',
+    titlePreviewEmpty: 'Tu Nombre CORE',
     resultReady: '¡Tu vídeo CORE está listo!',
     downloadBtn: 'Descargar vídeo',
     learnTitle: 'Aprende sobre los vídeos CORE',
@@ -166,7 +166,7 @@ const es: Translations = {
       },
       {
         title: 'Introduce el nombre',
-        desc: 'Escribe el nombre para la tarjeta. CoreGenerator lo muestra como "Nombre CORE 💀" en cada transición.',
+        desc: 'Escribe el nombre para la tarjeta. Se muestra como "Nombre CORE" centrado en todo el vídeo.',
       },
       {
         title: 'Genera y descarga',
@@ -309,7 +309,7 @@ const es: Translations = {
       },
       {
         q: '¿Qué muestra la tarjeta de título?',
-        a: 'Introduces un nombre y aparece como "Nombre CORE 💀" en cada cortinilla de 2 s entre clips.',
+        a: 'Introduces un nombre y aparece como "Nombre CORE" centrado en pantalla durante todo el vídeo.',
       },
       {
         q: '¿Guardáis mis vídeos?',

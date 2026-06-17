@@ -58,11 +58,11 @@ Coloca estos archivos en `backend/assets/`:
 
 | Archivo | Descripción |
 |---|---|
-| `boom.mp3` | Sonido boom en cada transición |
-| `transition.mp4` | Cortinilla negra 2 s (1080×1920, 30 fps) |
-| `skull.png` | Emoji 💀 en la tarjeta de título |
+| `QKThr.mp3` | Música de fondo (50 % de volumen en el vídeo final) |
+| `boom.mp3` | Sonido boom en la cortinilla final |
+| `transition.mp4` | Cortinilla final 2 s (1080×1920, 30 fps) |
 
-Si faltan, la app sigue funcionando con fallbacks (sin boom o cortinilla generada).
+Si faltan, la app sigue funcionando con fallbacks (sin música, sin boom o cortinilla generada).
 
 ---
 
@@ -197,7 +197,7 @@ generador-core/
 ├── frontend/          React + Vite + TypeScript + i18n (es/en)
 │   └── src/i18n/      Traducciones
 ├── backend/           Express + FFmpeg
-│   ├── assets/        boom.mp3, transition.mp4, skull.png
+│   ├── assets/        QKThr.mp3, boom.mp3, transition.mp4
 │   ├── temp/          Archivos temporales (auto-limpieza)
 │   └── src/
 │       ├── routes/    POST /api/generate
@@ -222,8 +222,6 @@ generador-core/
 
 - Sin cuentas de usuario ni historial
 - Vídeos procesados temporalmente, no guardados
-- El emoji 💀 en la tarjeta puede no renderizarse en todas las fuentes
-- Requiere FFmpeg en el servidor; sin él la generación falla
 - Un solo estilo de edit CORE (sin plantillas múltiples)
 
 ---

@@ -31,7 +31,7 @@ const en: Translations = {
       { title: 'Upload your clips', desc: 'Add 2–10 short videos in the order you want.' },
       {
         title: 'Generate the CORE edit',
-        desc: 'Add a name – we insert 2s black title cards with boom between clips.',
+        desc: 'Add a name – it stays centered on screen throughout the video.',
       },
       {
         title: 'Download and share',
@@ -43,7 +43,7 @@ const en: Translations = {
     personNameLabel: 'Person name',
     personNamePlaceholder: 'e.g. Alex',
     titlePreview: 'Title preview:',
-    titlePreviewEmpty: 'Your Name CORE 💀',
+    titlePreviewEmpty: 'Your Name CORE',
     resultReady: 'Your CORE video is ready!',
     downloadBtn: 'Download video',
     learnTitle: 'Learn about CORE videos',
@@ -151,7 +151,7 @@ const en: Translations = {
       },
       {
         title: 'Enter the person name',
-        desc: 'Shown as "Name CORE 💀" on each 2-second transition screen.',
+        desc: 'Shown as "Name CORE" centered on screen for the whole video.',
       },
       {
         title: 'Generate and download',
@@ -253,7 +253,7 @@ const en: Translations = {
       },
       {
         q: 'What does the title card show?',
-        a: 'You enter a name; it appears as "Name CORE 💀" on each 2-second transition.',
+        a: 'You enter a name; it appears as "Name CORE" centered on screen for the entire video.',
       },
       {
         q: 'Do you store my videos?',

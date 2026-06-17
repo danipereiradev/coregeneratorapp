@@ -1,13 +1,16 @@
 import Jimp from 'jimp';
-import { fileExists } from './cleanup.js';
-import { getSkullAssetPath, OUTPUT_HEIGHT, OUTPUT_WIDTH } from './ffmpeg.js';
+import { OUTPUT_HEIGHT, OUTPUT_WIDTH } from './ffmpeg.js';
 
-const SKULL_EMOJI = '💀';
-const SKULL_GAP = 14;
+export const BRAND_ACCENT_RGB = { r: 124, g: 92, b: 255 };
 
 function getTitleFontSize(text: string): number {
   if (text.length <= 18) return 64;
   if (text.length <= 30) return 48;
+  return 36;
+}
+
+function getBrandingFontSize(text: string): number {
+  if (text.length <= 28) return 48;
   return 36;
 }
 
@@ -17,46 +20,40 @@ async function loadFont(fontSize: number) {
   return Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
 }
 
-function splitTitleAndEmoji(titleText: string): { text: string; hasSkull: boolean } {
-  const hasSkull = titleText.includes(SKULL_EMOJI);
-  const text = titleText.replace(new RegExp(`\\s*${SKULL_EMOJI}\\s*$`), '').trimEnd();
-  return { text, hasSkull };
+function tintOpaquePixels(image: Jimp, color: { r: number; g: number; b: number }): void {
+  image.scan(0, 0, image.bitmap.width, image.bitmap.height, function scan(_x, _y, idx) {
+    const alpha = this.bitmap.data[idx + 3];
+    if (alpha > 0) {
+      this.bitmap.data[idx] = color.r;
+      this.bitmap.data[idx + 1] = color.g;
+      this.bitmap.data[idx + 2] = color.b;
+    }
+  });
 }
 
-async function renderTitleImage(
-  titleText: string,
-  background: number,
+async function renderCenteredText(
+  text: string,
+  fontSize: number,
+  color: { r: number; g: number; b: number },
 ): Promise<Jimp> {
-  const { text, hasSkull } = splitTitleAndEmoji(titleText);
-  const fontSize = getTitleFontSize(titleText);
   const font = await loadFont(fontSize);
-
-  const image = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, background);
   const textWidth = Jimp.measureText(font, text);
   const textHeight = Jimp.measureTextHeight(font, text, OUTPUT_WIDTH - 80);
-
-  let skullSize = 0;
-  if (hasSkull) {
-    skullSize = Math.round(fontSize * 1.15);
-  }
-
-  const totalWidth = textWidth + (hasSkull ? SKULL_GAP + skullSize : 0);
-  const x = Math.max(40, Math.round((OUTPUT_WIDTH - totalWidth) / 2));
+  const x = Math.max(40, Math.round((OUTPUT_WIDTH - textWidth) / 2));
   const y = Math.max(40, Math.round((OUTPUT_HEIGHT - textHeight) / 2));
 
-  image.print(font, x, y, text);
+  const image = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
 
-  if (hasSkull) {
-    const skullPath = getSkullAssetPath();
-    if (await fileExists(skullPath)) {
-      const skull = await Jimp.read(skullPath);
-      skull.resize(skullSize, skullSize);
-      const skullY = y + Math.round((textHeight - skullSize) / 2);
-      image.composite(skull, x + textWidth + SKULL_GAP, skullY);
-    } else {
-      console.warn('[titleCard] skull.png not found at', skullPath);
-    }
-  }
+  const shadow = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
+  shadow.print(font, x + 4, y + 4, text);
+  tintOpaquePixels(shadow, { r: 0, g: 0, b: 0 });
+  shadow.blur(3);
+  image.composite(shadow, 0, 0);
+
+  const textLayer = new Jimp(OUTPUT_WIDTH, OUTPUT_HEIGHT, 0x00000000);
+  textLayer.print(font, x, y, text);
+  tintOpaquePixels(textLayer, color);
+  image.composite(textLayer, 0, 0);
 
   return image;
 }
@@ -65,14 +62,16 @@ export async function createTitleOverlayImage(
   titleText: string,
   outputPath: string,
 ): Promise<void> {
-  const image = await renderTitleImage(titleText, 0x00000000);
+  const fontSize = getTitleFontSize(titleText);
+  const image = await renderCenteredText(titleText, fontSize, { r: 255, g: 255, b: 255 });
   await image.writeAsync(outputPath);
 }
 
-export async function createTitleCardImage(
-  titleText: string,
+export async function createBrandingOverlayImage(
+  brandingText: string,
   outputPath: string,
 ): Promise<void> {
-  const image = await renderTitleImage(titleText, 0x000000ff);
+  const fontSize = getBrandingFontSize(brandingText);
+  const image = await renderCenteredText(brandingText, fontSize, BRAND_ACCENT_RGB);
   await image.writeAsync(outputPath);
 }

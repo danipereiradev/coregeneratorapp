@@ -43,5 +43,7 @@ export function validatePersonName(raw: string): string | null {
 }
 
 export function formatCoreTitle(personName: string): string {
-  return `${sanitizePersonName(personName)} CORE 💀`;
+  return `${sanitizePersonName(personName)} CORE`;
 }
+
+export const END_BRANDING_TEXT = 'generado por CoreGenerator.app';
