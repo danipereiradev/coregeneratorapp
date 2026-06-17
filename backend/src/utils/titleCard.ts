@@ -3,6 +3,7 @@ import { OUTPUT_HEIGHT, OUTPUT_WIDTH } from './ffmpeg.js';
 
 export const BRAND_ACCENT_RGB = { r: 124, g: 92, b: 255 };
 const BRANDING_SCALE = 4;
+const TITLE_SCALE = 1.5;
 
 function getTitleFontSize(text: string): number {
   if (text.length <= 18) return 64;
@@ -93,7 +94,12 @@ export async function createTitleOverlayImage(
   outputPath: string,
 ): Promise<void> {
   const fontSize = getTitleFontSize(titleText);
-  const image = await renderCenteredText(titleText, fontSize, { r: 255, g: 255, b: 255 });
+  const image = await renderCenteredText(
+    titleText,
+    fontSize,
+    { r: 255, g: 255, b: 255 },
+    TITLE_SCALE,
+  );
   await image.writeAsync(outputPath);
 }
 
