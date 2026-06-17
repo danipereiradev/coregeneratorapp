@@ -106,7 +106,9 @@ const es: Translations = {
   },
   errors: {
     generic: 'Algo ha fallado. Inténtalo de nuevo.',
-    serverUnreachable: 'No se puede conectar al servidor. Inicia el backend: cd backend && npm run dev',
+    apiNotConfigured:
+      'La API no está configurada. En Vercel, define VITE_API_URL con la URL de Railway y vuelve a desplegar.',
+    serverUnreachable: 'No se puede conectar al servidor de la API. Comprueba tu conexión o inténtalo más tarde.',
     ffmpeg: 'FFmpeg no está instalado en el servidor.',
     tooManyRequests: 'Demasiadas peticiones. Espera unos minutos e inténtalo de nuevo.',
   },

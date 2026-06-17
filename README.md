@@ -128,36 +128,35 @@ npm start
 
 Requisitos: FFmpeg en el sistema, `cwd` en `backend/`, carpeta `temp/` con permisos de escritura.
 
-### 3. Frontend (Vercel, Netlify, Cloudflare Pages)
+### 3. Frontend en Vercel
 
-```bash
-cd frontend
-npm install
-npm run build
-# Salida en frontend/dist/
-```
-
-Variables en el panel del hosting:
+1. En Vercel, **Root Directory: `frontend`**
+2. Variable de entorno obligatoria (Settings → Environment Variables):
 
 ```
-VITE_API_URL=https://api.tudominio.com
+VITE_API_URL=https://tu-servicio.up.railway.app
 ```
 
-Configurar **SPA fallback**: todas las rutas (`/faq`, `/privacy`, etc.) deben servir `index.html`.
+Sin barra final. **Redeploy** tras guardarla (Vite la embebe en el build).
 
-**Netlify** – crear `frontend/public/_redirects`:
+3. El frontend llama al backend de Railway directamente. No uses proxy en Vercel: los vídeos pueden pesar hasta 200 MB y superan el límite de las funciones serverless.
+
+**Netlify / Cloudflare Pages** – misma variable `VITE_API_URL` y SPA fallback.
+
+**Netlify** – `frontend/public/_redirects`:
 ```
 /*    /index.html   200
 ```
 
-**Vercel** – `vercel.json`:
-```json
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
-```
-
 ### 4. CORS
 
-En el backend, `FRONTEND_URL` debe coincidir **exactamente** con la URL del frontend (con `https://`, sin barra final).
+En Railway, `FRONTEND_URL` debe ser la URL exacta del frontend:
+
+```
+FRONTEND_URL=https://coregeneratorapp.vercel.app
+```
+
+Varios orígenes separados por coma si hace falta (preview + producción).
 
 ### 5. Google Analytics 4
 

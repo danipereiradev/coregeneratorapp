@@ -1,7 +1,7 @@
 import type { GenerateStatus } from '../types/video';
 import type { TFunction } from '../i18n/I18nContext';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 function getApiBase(): string {
   if (import.meta.env.DEV && (!API_URL || API_URL.includes('localhost:4000'))) {
@@ -32,6 +32,11 @@ export async function generateVideo(
   onStatusChange: StatusCallback,
   t: TFunction,
 ): Promise<Blob> {
+  const apiBase = getApiBase();
+  if (!apiBase) {
+    throw new Error(t('errors.apiNotConfigured'));
+  }
+
   onStatusChange('uploading');
 
   const formData = new FormData();
@@ -42,7 +47,7 @@ export async function generateVideo(
 
   let response: Response;
   try {
-    response = await fetch(`${getApiBase()}/api/generate`, {
+    response = await fetch(`${apiBase}/api/generate`, {
       method: 'POST',
       body: formData,
     });

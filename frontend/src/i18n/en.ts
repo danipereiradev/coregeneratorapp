@@ -93,7 +93,9 @@ const en: Translations = {
   },
   errors: {
     generic: 'Something went wrong. Please try again.',
-    serverUnreachable: 'Cannot reach the server. Start the backend: cd backend && npm run dev',
+    apiNotConfigured:
+      'The API is not configured. In Vercel, set VITE_API_URL to your Railway URL and redeploy.',
+    serverUnreachable: 'Cannot reach the API server. Check your connection or try again later.',
     ffmpeg: 'FFmpeg is not installed on the server.',
     tooManyRequests: 'Too many requests. Please wait a few minutes and try again.',
   },

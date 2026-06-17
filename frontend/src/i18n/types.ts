@@ -100,6 +100,7 @@ export interface Translations {
   };
   errors: {
     generic: string;
+    apiNotConfigured: string;
     serverUnreachable: string;
     ffmpeg: string;
     tooManyRequests: string;

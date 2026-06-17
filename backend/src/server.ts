@@ -9,9 +9,22 @@ import { FfmpegError, isFfmpegAvailable } from './utils/ffmpeg.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors({ origin: FRONTEND_URL }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
+  }),
+);
 app.use(express.json());
 
 const generateRateLimit = rateLimit({
@@ -68,5 +81,5 @@ app.use(
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`CoreGenerator backend listening on port ${PORT}`);
-  console.log(`CORS allowed origin: ${FRONTEND_URL}`);
+  console.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
 });
