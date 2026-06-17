@@ -90,54 +90,89 @@ async function buildEndTransitionFallback(
   ]);
 }
 
-async function createBoomCut(jobFolder: string, index: number): Promise<string | null> {
-  const boomPath = getBoomAssetPath();
-  if (!(await fileExists(boomPath))) {
-    console.warn('[video] boom.mp3 not found – skipping boom between clips');
-    return null;
+function buildBoomAudioMixFilter(
+  delaysMs: number[],
+  hasVideoAudio: boolean,
+  boomDuration: number,
+): string {
+  const n = delaysMs.length;
+  let filter =
+    `[1:a]volume=${BOOM_VOLUME},atrim=0:${boomDuration},asetpts=PTS-STARTPTS,` +
+    'aformat=sample_rates=44100:channel_layouts=stereo[boomsrc];';
+
+  const delayedLabels: string[] = [];
+
+  if (n === 1) {
+    filter += `[boomsrc]adelay=${delaysMs[0]}|${delaysMs[0]}[bd0];`;
+    delayedLabels.push('[bd0]');
+  } else {
+    filter += `[boomsrc]asplit=${n}`;
+    for (let i = 0; i < n; i++) {
+      filter += `[b${i}]`;
+    }
+    filter += ';';
+    for (let i = 0; i < n; i++) {
+      filter += `[b${i}]adelay=${delaysMs[i]}|${delaysMs[i]}[bd${i}];`;
+      delayedLabels.push(`[bd${i}]`);
+    }
   }
 
-  const boomsDir = path.join(jobFolder, 'booms');
-  await ensureDir(boomsDir);
+  if (hasVideoAudio) {
+    filter +=
+      '[0:a]aformat=sample_rates=44100:channel_layouts=stereo[va];' +
+      `[va]${delayedLabels.join('')}amix=inputs=${n + 1}:duration=first:dropout_transition=0:normalize=0[a]`;
+  } else {
+    filter += `${delayedLabels.join('')}amix=inputs=${n}:duration=longest:normalize=0[a]`;
+  }
 
-  const outputPath = path.join(boomsDir, `boom-${String(index + 1).padStart(2, '0')}.mp4`);
+  return filter;
+}
+
+async function mixBoomsBetweenClips(
+  videoPath: string,
+  clipPaths: string[],
+  jobFolder: string,
+): Promise<string> {
+  const boomPath = getBoomAssetPath();
+  if (!(await fileExists(boomPath)) || clipPaths.length < 2) {
+    return videoPath;
+  }
+
+  const clipDurations: number[] = [];
+  for (const clipPath of clipPaths) {
+    clipDurations.push(await getMediaDuration(clipPath));
+  }
+
+  const delaysMs: number[] = [];
+  let cumulativeSec = 0;
+  for (let i = 0; i < clipDurations.length - 1; i++) {
+    cumulativeSec += clipDurations[i];
+    delaysMs.push(Math.round(cumulativeSec * 1000));
+  }
+
   const boomDuration = Math.min(await getMediaDuration(boomPath), BOOM_CUT_MAX_SEC);
+  const outputPath = path.join(jobFolder, 'with-booms-audio.mp4');
+  const hasVideoAudio = await hasAudioStream(videoPath);
+  const filter = buildBoomAudioMixFilter(delaysMs, hasVideoAudio, boomDuration);
 
   await runFfmpeg([
-    '-f',
-    'lavfi',
     '-i',
-    `color=c=black:s=${OUTPUT_WIDTH}x${OUTPUT_HEIGHT}:r=${OUTPUT_FPS}`,
+    videoPath,
     '-i',
     boomPath,
     '-filter_complex',
-    `[1:a]volume=${BOOM_VOLUME},aformat=sample_rates=44100:channel_layouts=stereo,atrim=0:${boomDuration},asetpts=PTS-STARTPTS[a]`,
+    filter,
     '-map',
     '0:v',
     '-map',
     '[a]',
-    '-t',
-    String(boomDuration),
-    ...getVideoEncodeArgs(),
+    ...getVideoCopyArgs(),
     ...getAudioEncodeArgs(),
     ...getFaststartArgs(),
     outputPath,
   ]);
 
   return outputPath;
-}
-
-function interleaveClipsWithBooms(clips: string[], booms: (string | null)[]): string[] {
-  const sequence: string[] = [];
-
-  for (let i = 0; i < clips.length; i++) {
-    sequence.push(clips[i]);
-    if (i < booms.length && booms[i]) {
-      sequence.push(booms[i]!);
-    }
-  }
-
-  return sequence;
 }
 
 export function createTempJobFolder(): string {
@@ -335,16 +370,18 @@ export async function generateCoreVideo(
   console.log(`[video] Creating end transition: "${END_BRANDING_TEXT}"`);
   const endTransition = await createEndTransition(jobFolder, END_BRANDING_TEXT);
 
-  console.log('[video] Creating boom cuts between clips…');
-  const boomCuts: (string | null)[] = [];
-  for (let i = 0; i < titledClipPaths.length - 1; i++) {
-    boomCuts.push(await createBoomCut(jobFolder, i));
-  }
+  console.log('[video] Concatenating clips…');
+  const clipsOnlyPath = await concatenateClips(titledClipPaths, jobFolder, 'clips-only.mp4');
 
-  const sequence = interleaveClipsWithBooms(titledClipPaths, boomCuts);
-  sequence.push(endTransition);
-  console.log(`[video] Concatenating ${sequence.length} segments…`);
-  const concatenatedPath = await concatenateClips(sequence, jobFolder, 'concatenated.mp4');
+  console.log('[video] Mixing boom audio between clips (no transition video)…');
+  const clipsWithBooms = await mixBoomsBetweenClips(clipsOnlyPath, titledClipPaths, jobFolder);
+
+  console.log('[video] Appending end transition…');
+  const concatenatedPath = await concatenateClips(
+    [clipsWithBooms, endTransition],
+    jobFolder,
+    'concatenated.mp4',
+  );
 
   console.log('[video] Mixing background music…');
   const outputPath = await mixBackgroundMusic(concatenatedPath, jobFolder);
