@@ -8,6 +8,8 @@ import type { GenerateErrorResponse } from './types/index.js';
 import { FfmpegError, isFfmpegAvailable } from './utils/ffmpeg.js';
 
 const app = express();
+app.set('trust proxy', 1);
+
 const PORT = Number(process.env.PORT) || 4000;
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
   .split(',')
