@@ -867,6 +867,59 @@ a:hover {
   font-size: 0.85rem !important;
 }
 
+.youtube-shorts-section {
+  margin-bottom: 2.5rem;
+}
+
+.youtube-shorts-section > p {
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+}
+
+.youtube-shorts-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  max-width: 960px;
+}
+
+.youtube-short-card {
+  margin: 0;
+}
+
+.youtube-short-embed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.youtube-short-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.youtube-short-card figcaption {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.youtube-short-card figcaption a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.youtube-short-card figcaption a:hover {
+  color: var(--accent-hover);
+}
+
 .structure-block {
   padding: 1rem 1.25rem;
   background: var(--bg-card);

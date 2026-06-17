@@ -286,6 +286,13 @@ const es: Translations = {
     tryText:
       'Sube tus clips, escribe un nombre y CoreGenerator monta esta estructura automáticamente.',
     cta: 'Generar tu ejemplo →',
+    youtubeTitle: 'Shorts CORE reales en YouTube',
+    youtubeLead: 'Tres ejemplos de referencia del estilo CORE en YouTube Shorts.',
+    youtubeShorts: [
+      { id: 'oyb9YcMGavk', label: 'Ejemplo 1' },
+      { id: '2fPR-BXMaBg', label: 'Ejemplo 2' },
+      { id: 'j9sTvhDShiM', label: 'Ejemplo 3' },
+    ],
   },
   faq: {
     metaTitle: 'FAQ – CoreGenerator',

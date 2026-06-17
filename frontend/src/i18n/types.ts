@@ -150,6 +150,9 @@ export interface Translations {
     tryTitle: string;
     tryText: string;
     cta: string;
+    youtubeTitle: string;
+    youtubeLead: string;
+    youtubeShorts: { id: string; label: string }[];
   };
   faq: {
     metaTitle: string;

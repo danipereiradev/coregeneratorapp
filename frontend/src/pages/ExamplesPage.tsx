@@ -19,6 +19,36 @@ export default function ExamplesPage() {
         <p>{p.structureNote}</p>
       </section>
 
+      <section className="youtube-shorts-section">
+        <h2>{p.youtubeTitle}</h2>
+        <p>{p.youtubeLead}</p>
+        <div className="youtube-shorts-grid">
+          {p.youtubeShorts.map((video) => (
+            <figure key={video.id} className="youtube-short-card">
+              <div className="youtube-short-embed">
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id}`}
+                  title={video.label}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+              <figcaption>
+                <a
+                  href={`https://www.youtube.com/shorts/${video.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {video.label}
+                </a>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
       <div className="examples-grid">
         {p.items.map((ex) => (
           <section key={ex.title} className="example-card">

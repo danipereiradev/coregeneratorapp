@@ -270,6 +270,13 @@ const en: Translations = {
     tryText:
       'Upload clips and enter a name — CoreGenerator builds this structure automatically.',
     cta: 'Generate your example →',
+    youtubeTitle: 'Real CORE Shorts on YouTube',
+    youtubeLead: 'Three reference examples of the CORE edit style on Shorts.',
+    youtubeShorts: [
+      { id: 'oyb9YcMGavk', label: 'Example 1' },
+      { id: '2fPR-BXMaBg', label: 'Example 2' },
+      { id: 'j9sTvhDShiM', label: 'Example 3' },
+    ],
   },
   faq: {
     metaTitle: 'FAQ – CoreGenerator',
