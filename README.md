@@ -92,33 +92,41 @@ Si faltan, la app sigue funcionando con fallbacks (sin boom o cortinilla generad
 - [ ] Subdominio API, ej. `api.tudominio.com` → backend
 - [ ] HTTPS en ambos (Let's Encrypt / Cloudflare)
 
-### 2. Servidor backend (VPS recomendado: Railway, Render, Fly.io, Hetzner, DigitalOcean)
+### 2. Backend en Railway (recomendado)
 
-El backend **necesita FFmpeg** y espacio en disco para temporales.
+1. En [Railway](https://railway.app), crea un servicio desde el repo y configura **Root Directory: `backend`**
+2. Variables de entorno:
+
+| Variable | Valor |
+|---|---|
+| `FRONTEND_URL` | URL del frontend (ej. `https://tu-app.vercel.app`) |
+| `MAX_UPLOAD_MB` | `100`–`200` según plan (opcional) |
+
+`PORT` lo asigna Railway automáticamente.
+
+3. El deploy usa `nixpacks.toml` (instala FFmpeg) y `railway.toml` (build, health check en `/api/health`)
+4. Copia la URL pública del servicio (ej. `https://xxx.up.railway.app`) y configúrala en el frontend como `VITE_API_URL`
+
+**Verificación post-deploy:**
+
+```bash
+curl https://tu-api.up.railway.app/api/health
+# {"status":"ok","service":"coregenerator-backend","ffmpeg":true}
+```
+
+### 2b. Backend en VPS (Hetzner, DigitalOcean, etc.)
 
 ```bash
 cd backend
 npm install
 npm run build
 cp .env.example .env
-# Editar .env:
-#   PORT=4000
-#   FRONTEND_URL=https://tudominio.com
-#   MAX_UPLOAD_MB=200
+# Editar FRONTEND_URL y MAX_UPLOAD_MB
 
-# Asegurar assets
-ls assets/boom.mp3 assets/transition.mp4 assets/skull.png
-
-# Arrancar
 npm start
-# o con PM2:
-# pm2 start dist/server.js --name coregenerator-api
 ```
 
-**Importante:**
-- `cwd` del proceso debe ser la carpeta `backend/` (para encontrar `assets/` y `temp/`)
-- FFmpeg instalado en el sistema
-- Carpeta `temp/` con permisos de escritura
+Requisitos: FFmpeg en el sistema, `cwd` en `backend/`, carpeta `temp/` con permisos de escritura.
 
 ### 3. Frontend (Vercel, Netlify, Cloudflare Pages)
 

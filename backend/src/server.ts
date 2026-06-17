@@ -5,7 +5,7 @@ import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import generateRouter from './routes/generate.js';
 import type { GenerateErrorResponse } from './types/index.js';
-import { FfmpegError } from './utils/ffmpeg.js';
+import { FfmpegError, isFfmpegAvailable } from './utils/ffmpeg.js';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -22,8 +22,14 @@ const generateRateLimit = rateLimit({
   message: { error: 'Too many generation requests. Please try again later.' },
 });
 
-app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'coregenerator-backend' });
+app.get('/api/health', async (_req, res) => {
+  const ffmpeg = await isFfmpegAvailable();
+  const body = {
+    status: ffmpeg ? 'ok' : 'degraded',
+    service: 'coregenerator-backend',
+    ffmpeg,
+  };
+  res.status(ffmpeg ? 200 : 503).json(body);
 });
 
 app.use('/api/generate', generateRateLimit, generateRouter);
@@ -60,7 +66,7 @@ app.use(
   },
 );
 
-app.listen(PORT, () => {
-  console.log(`CoreGenerator backend running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`CoreGenerator backend listening on port ${PORT}`);
   console.log(`CORS allowed origin: ${FRONTEND_URL}`);
 });

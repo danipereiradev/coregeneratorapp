@@ -3,7 +3,7 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import type { Express } from 'express';
 import { ensureDir, fileExists, getTempRoot } from '../utils/cleanup.js';
-import { formatCoreTitle, sanitizeFilename } from '../utils/sanitize.js';
+import { formatCoreTitle } from '../utils/sanitize.js';
 import {
   FfmpegError,
   OUTPUT_FPS,
@@ -137,25 +137,11 @@ export function createTempJobFolder(): string {
   return path.join(getTempRoot(), jobId);
 }
 
-export async function saveUploadedFiles(
-  files: Express.Multer.File[],
-  jobFolder: string,
-): Promise<string[]> {
-  await ensureDir(jobFolder);
-  const uploadsDir = path.join(jobFolder, 'uploads');
-  await ensureDir(uploadsDir);
-
-  const savedPaths: string[] = [];
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const safeName = `${String(i + 1).padStart(2, '0')}-${sanitizeFilename(file.originalname)}`;
-    const destPath = path.join(uploadsDir, safeName);
-    await fs.writeFile(destPath, file.buffer);
-    savedPaths.push(destPath);
-  }
-
-  return savedPaths;
+export function getUploadedFilePaths(files: Express.Multer.File[]): string[] {
+  return files
+    .map((file) => file.path)
+    .filter((filePath): filePath is string => Boolean(filePath))
+    .sort();
 }
 
 export async function normalizeClip(
