@@ -13,6 +13,7 @@ import {
   OUTPUT_HEIGHT,
   OUTPUT_WIDTH,
   TRANSITION_DURATION_SEC,
+  CLIP_TRANSITION_DURATION_SEC,
   getAudioEncodeArgs,
   getBackgroundMusicPath,
   getBoomAssetPath,
@@ -239,7 +240,7 @@ export async function createClipTransition(
     `transition-${String(index + 1).padStart(2, '0')}.mp4`,
   );
   const transitionPath = getTransitionAssetPath();
-  const duration = TRANSITION_DURATION_SEC;
+  const duration = CLIP_TRANSITION_DURATION_SEC;
 
   if (await fileExists(transitionPath)) {
     await buildClipTransitionFromTemplate(transitionPath, titleImagePath, outputPath, duration);

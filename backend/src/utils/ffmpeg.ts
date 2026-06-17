@@ -5,6 +5,7 @@ export const OUTPUT_WIDTH = 1080;
 export const OUTPUT_HEIGHT = 1920;
 export const OUTPUT_FPS = 30;
 export const TRANSITION_DURATION_SEC = 2;
+export const CLIP_TRANSITION_DURATION_SEC = 1;
 export const BOOM_VOLUME = 3.375;
 export const BACKGROUND_MUSIC_VOLUME = 0.5;
 export const BOOM_CUT_MAX_SEC = 1.5;
